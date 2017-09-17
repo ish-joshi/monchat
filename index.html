@@ -23,6 +23,7 @@
             max-height: 600px;
             overflow-y: auto;
         }
+
     </style>
 
 </head>
@@ -46,6 +47,7 @@
 
     <div id="messages_text_field" class="col s12 m8 offset-m2 l6 offset-l3">
         <div class="row">
+            <!--TODO replace textchat and send button if fails-->
             <div class="input-field col s12">
                 <input id="txt_message_to_send" type="text">
                 <label for="txt_message_to_send">Message</label>
@@ -54,6 +56,7 @@
             <div class="input-field col s12 center">
                 <a onclick="send_message_to_room()" class="waves-effect waves-light btn">Send</a>
             </div>
+
         </div>
     </div>
     <div id="unit_messages" class="col s12 m8 offset-m2 l6 offset-l3">
@@ -95,13 +98,17 @@
 
                 firebase.database().ref("/online/"+logged_in_uid).set(true);
 
+                selected_unit = localStorage.getItem("selected_unit");
+
                 if(selected_unit){
 
-                }else{
-                    //TODO set it to reopen
-                    //$('#modal_get_unit').modal('open');
+                    //TODO local load of memory
+                    $('#modal_get_unit').modal('open');
 
-                    on_join_clicked();
+                }else{
+
+                    $('#modal_get_unit').modal('open');
+
                 }
 
             } else {
@@ -145,22 +152,30 @@
         message_ref.on('value', function(snapshot) {
 
             add_message_to_dom(snapshot.val());
+
             $("#message_status").html("Joined room <strong>"+ selected_unit + "</strong>");
+
+            localStorage.setItem("selected_unit", selected_unit);
+
         });
 
     }
 
     function send_message_to_room(){
-        var message = $("#txt_message_to_send").val();
+        var message_text = $("#txt_message_to_send");
+        var message = message_text.val();
+
+        message_text.html("");
 
         firebase.database().ref("/chats/" + selected_unit).push({'id': logged_in_uid , 'txt':message});
 
     }
 
-    function on_join_clicked(){
+    function on_join_clicked(unit){
         //TODO restore this line
-        //var unit_to_join = $("#txt_unit_code").val();
-        var unit_to_join = "FIT1047";
+        var unit_to_join = $("#txt_unit_code").val();
+//        var unit_to_join = unit==""?"FIT1045":unit;
+
         unit_to_join = unit_to_join.toUpperCase();
 
 
@@ -189,6 +204,12 @@
 
 </script>
 
+
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large pink modal-trigger" href="#modal_get_unit">
+        <i class="large material-icons">add</i>
+    </a>
+</div>
 
 <!-- Modal Structure -->
 <div id="modal_get_unit" class="modal bottom-sheet">
