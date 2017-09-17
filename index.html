@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" href="css/pace-theme.css">
+    <script src="scripts/pace.js"></script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+    <style>
+        #message_status {
+            padding: 3%;
+        }
+
+        #unit_messages {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+
+</head>
+
+<body onunload="user_closed_state()">
+
+<nav>
+    <div class="nav-wrapper pink">
+        <a href="#" class="brand-logo center">Unit-Chat</a>
+    </div>
+</nav>
+
+
+<div id="message_status" class="center">
+    <p class="grey-text">Please join a room.</p>
+</div>
+
+<div class="row">
+
+
+    <div id="messages_text_field" class="col s12 m8 offset-m2 l6 offset-l3">
+        <div class="row">
+            <div class="input-field col s10">
+                <input id="txt_message_to_send" type="text">
+                <label for="txt_message_to_send">Message</label>
+            </div>
+
+            <div class="input-field col s2 center">
+                <a onclick="send_message_to_room()" class="waves-effect waves-light btn">Send</a>
+            </div>
+        </div>
+    </div>
+    <div id="unit_messages" class="col s12 m8 offset-m2 l6 offset-l3">
+
+    </div>
+
+
+
+</div>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+<script>
+
+    logged_in_uid = null;
+    selected_unit = null;
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyD5rzxDVk6IhO0EYWfcGwZoD-WdnrtxPDI",
+        authDomain: "lang-connect-d7ab5.firebaseapp.com",
+        databaseURL: "https://lang-connect-d7ab5.firebaseio.com",
+        projectId: "lang-connect-d7ab5",
+        storageBucket: "lang-connect-d7ab5.appspot.com",
+        messagingSenderId: "752951627245"
+    };
+    firebase.initializeApp(config);
+
+    $(document).ready(function () {
+        //initialize materialize components
+        $('.modal').modal();
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                // User is signed in.
+
+                logged_in_uid = user.uid;
+
+                firebase.database().ref("/online/"+logged_in_uid).set(true);
+
+                if(selected_unit){
+
+                }else{
+                    //TODO set it to reopen
+                    //$('#modal_get_unit').modal('open');
+
+                    on_join_clicked();
+                }
+
+            } else {
+                // Give them anonymous identity
+                firebase.auth().signInAnonymously().catch(function(error) {
+
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+
+                    Materialize.toast("Oh snap! Anonymous login failed.", 10000);
+
+                });
+            }
+        });
+    });
+
+    function user_closed_state() {
+        if(logged_in_uid){
+            firebase.database().ref("/online/"+logged_in_uid).set(null);
+        }
+    }
+
+    function add_message_to_dom(message){
+        var messages_div = $("#unit_messages");
+        messages_div.html("");
+        for (var key in message){
+            var html_to_add = "<p>" + (message[key]['txt']) + "</p>";
+            messages_div.append(html_to_add);
+        }
+
+        messages_div.animate({scrollTop: messages_div.get(0).scrollHeight}, 2000);
+
+
+    }
+
+    function join(){
+
+        $('#modal_get_unit').modal('close');
+
+        var message_ref = firebase.database().ref('chats/' + selected_unit);
+        message_ref.on('value', function(snapshot) {
+
+            add_message_to_dom(snapshot.val());
+            $("#message_status").html("Joined room <strong>"+ selected_unit + "</strong>");
+        });
+
+    }
+
+    function send_message_to_room(){
+        var message = $("#txt_message_to_send").val();
+
+        firebase.database().ref("/chats/" + selected_unit).push({'id': logged_in_uid , 'txt':message});
+
+    }
+
+    function on_join_clicked(){
+        //TODO restore this line
+        //var unit_to_join = $("#txt_unit_code").val();
+        var unit_to_join = "FIT1045";
+        unit_to_join = unit_to_join.toUpperCase();
+
+
+        firebase.database().ref('/monash_units/' + unit_to_join).once('value').then(function(snapshot) {
+            var value = snapshot.val();
+            if(value){
+                selected_unit = unit_to_join;
+                join();
+            }else{
+                $("#txt_unit_code").val("").focus();
+                Materialize.toast("Invalid unit code, cannot join.", 1800);
+            }
+        });
+    }
+
+
+    function get_random_text() {
+
+        var letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        var random_text = '';
+        for (var i = 0; i < 6; i++) {
+            random_text += letters[Math.floor(Math.random() * 16)];
+        }
+        return random_text;
+    }
+
+</script>
+
+
+<!-- Modal Structure -->
+<div id="modal_get_unit" class="modal bottom-sheet">
+    <div class="modal-content">
+        <div class="row">
+            <div class="input-field col s12">
+                <input style="text-transform: uppercase" id="txt_unit_code" type="text">
+                <label for="txt_unit_code">Unit Code</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a class="waves-effect btn-flat" onclick="on_join_clicked()">Join</a>
+        <a href="#" class="modal-action modal-close waves-effect btn-flat">Close</a>
+    </div>
+</div>
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
