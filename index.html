@@ -102,8 +102,10 @@
 
                 if(selected_unit){
 
+                    on_join_clicked(selected_unit);
+
                     //TODO local load of memory
-                    $('#modal_get_unit').modal('open');
+//                    $('#modal_get_unit').modal('open');
 
                 }else{
 
@@ -132,6 +134,9 @@
     }
 
     function add_message_to_dom(message){
+
+        console.log(message);
+
         var messages_div = $("#unit_messages");
         messages_div.html("");
 
@@ -176,7 +181,14 @@
     function on_join_clicked(unit){
         //TODO restore this line
         var unit_to_join = $("#txt_unit_code").val();
-//        var unit_to_join = unit==""?"FIT1045":unit;
+
+        console.log(unit_to_join, unit);
+
+        if (unit != "" && unit != null){
+            unit_to_join = unit;
+        }
+
+        unit_to_join = unit_to_join=="" ? "General" : unit_to_join;
 
         unit_to_join = unit_to_join.toUpperCase();
 
