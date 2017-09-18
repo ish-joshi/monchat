@@ -31,11 +31,11 @@
 
 <body onunload="user_closed_state()">
 <div class="navbar-fixed">
-<nav>
-    <div class="nav-wrapper pink">
-        <a href="#" class="brand-logo center">Monash Unit Chat</a>
-    </div>
-</nav>
+    <nav>
+        <div class="nav-wrapper pink">
+            <a href="#" class="brand-logo center">Unit Chat</a>
+        </div>
+    </nav>
 </div>
 
 
@@ -44,7 +44,6 @@
 </div>
 
 <div class="row">
-
 
 
     <div id="messages_text_field" class="col s12 m8 offset-m2 l6 offset-l3">
@@ -66,9 +65,7 @@
     </div>
 
 
-
 </div>
-
 
 
 <script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
@@ -92,7 +89,7 @@
         //initialize materialize components
         $('.modal').modal();
 
-        firebase.auth().onAuthStateChanged(function(user) {
+        firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 // User is signed in.
 
@@ -100,20 +97,20 @@
 
                 logged_in_name = localStorage.getItem("dn");
 
-                logged_in_name = logged_in_name==null ? "Anonymous" : logged_in_name;
+                logged_in_name = logged_in_name == null ? "Anonymous" : logged_in_name;
 
-                firebase.database().ref("/online/"+logged_in_uid).set(true);
+                firebase.database().ref("/online/" + logged_in_uid).set(true);
 
                 selected_unit = localStorage.getItem("selected_unit");
 
-                if(selected_unit){
+                if (selected_unit) {
 
                     on_join_clicked(selected_unit);
 
                     //TODO local load of memory
 //                    $('#modal_get_unit').modal('open');
 
-                }else{
+                } else {
 
                     $('#modal_get_unit').modal('open');
 
@@ -121,7 +118,7 @@
 
             } else {
                 // Give them anonymous identity
-                firebase.auth().signInAnonymously().catch(function(error) {
+                firebase.auth().signInAnonymously().catch(function (error) {
 
                     var errorCode = error.code;
                     var errorMessage = error.message;
@@ -134,27 +131,26 @@
     });
 
     function user_closed_state() {
-        if(logged_in_uid){
-            firebase.database().ref("/online/"+logged_in_uid).set(null);
+        if (logged_in_uid) {
+            firebase.database().ref("/online/" + logged_in_uid).set(null);
         }
     }
 
-    function get_html_for_dom(data){
-        return "<p>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+    function get_html_for_dom(data) {
+        return "<p class=''>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
     }
 
-    function add_message_to_dom(message){
-
+    function add_message_to_dom(message) {
 
 
         var messages_div = $("#unit_messages");
         messages_div.html("");
 
-        if(message == null){
+        if (message == null) {
             messages_div.append("<p class='pink-text center'>Be the first one to start the conversation!</p>");
         }
 
-        for (var key in message){
+        for (var key in message) {
 
             var message_info = {};
 
@@ -170,7 +166,6 @@
             message_info['who'] = who;
 
 
-
             var html_to_add = get_html_for_dom(message_info);
 
             messages_div.append(html_to_add);
@@ -181,16 +176,16 @@
 
     }
 
-    function join(){
+    function join() {
 
         $('#modal_get_unit').modal('close');
 
         var message_ref = firebase.database().ref('chats/' + selected_unit);
-        message_ref.on('value', function(snapshot) {
+        message_ref.on('value', function (snapshot) {
 
             add_message_to_dom(snapshot.val());
 
-            $("#message_status").html("Joined room <strong>"+ selected_unit + "</strong> <a class='grey-text modal-trigger' href='#modal_get_unit'>" + " (Change) "  + "</a>");
+            $("#message_status").html("Joined room <strong>" + selected_unit + "</strong> <a class='grey-text modal-trigger' href='#modal_get_unit'>" + " (Change) " + "</a>");
 
             localStorage.setItem("selected_unit", selected_unit);
 
@@ -200,28 +195,28 @@
 
     }
 
-    function send_message_to_room(){
+    function send_message_to_room() {
         var message_text = $("#txt_message_to_send");
         var message = message_text.val();
 
         if (message != "" && (selected_unit != "" || selected_unit != null)) {
 
-            if(message.length <= 120){
+            if (message.length <= 120) {
 
-            var ts = new Date().toISOString();
+                var ts = new Date().toISOString();
 
-            var display_name = logged_in_name;
+                var display_name = logged_in_name;
 
-            message_text.val("");
-            message_text.focus();
+                message_text.val("");
+                message_text.focus();
 
-            firebase.database().ref("/chats/" + selected_unit).push({
-                'id': logged_in_uid,
-                'txt': message,
-                'ts': ts,
-                'dn': display_name
-            });
-            }else{
+                firebase.database().ref("/chats/" + selected_unit).push({
+                    'id': logged_in_uid,
+                    'txt': message,
+                    'ts': ts,
+                    'dn': display_name
+                });
+            } else {
                 Materialize.toast("Enter less than 120 characters.", 1000);
             }
         } else {
@@ -229,34 +224,34 @@
         }
     }
 
-    function on_join_clicked(unit){
+    function on_join_clicked(unit) {
         //TODO restore this line
         var unit_to_join = $("#txt_unit_code").val();
 
         console.log(unit_to_join, unit);
 
-        if (unit != "" && unit != null){
+        if (unit != "" && unit != null) {
             unit_to_join = unit;
         }
 
-        unit_to_join = unit_to_join=="" ? "General" : unit_to_join;
+        unit_to_join = unit_to_join == "" ? "General" : unit_to_join;
 
         unit_to_join = unit_to_join.toUpperCase();
 
 
-        firebase.database().ref('/monash_units/' + unit_to_join).once('value').then(function(snapshot) {
+        firebase.database().ref('/monash_units/' + unit_to_join).once('value').then(function (snapshot) {
             var value = snapshot.val();
-            if(value){
+            if (value) {
                 selected_unit = unit_to_join;
                 join();
-            }else{
+            } else {
                 $("#txt_unit_code").val("").focus();
                 Materialize.toast("Invalid unit code, cannot join.", 1800);
             }
         });
     }
 
-    function update_display_name(e){
+    function update_display_name(e) {
         logged_in_name = e.value;
         localStorage.setItem("dn", logged_in_name);
     }
@@ -280,9 +275,12 @@
         <i class="large material-icons">settings</i>
     </a>
     <ul>
-        <li><a class="btn-floating green modal-trigger" href="#modal_get_unit"><i class="material-icons">add</i></a></li>
-        <li><a class="btn-floating blue modal-trigger" href="#modal_get_name"><i class="material-icons">perm_identity</i></a></li>
-        <li><a class="btn-floating red" onclick="localStorage.clear(); location.reload();"><i class="material-icons">delete</i></a></li>
+        <li><a class="btn-floating green modal-trigger" href="#modal_get_unit"><i class="material-icons">add</i></a>
+        </li>
+        <li><a class="btn-floating blue modal-trigger" href="#modal_get_name"><i
+                class="material-icons">perm_identity</i></a></li>
+        <li><a class="btn-floating red" onclick="localStorage.clear(); location.reload();"><i class="material-icons">delete</i></a>
+        </li>
         <!--<li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>-->
     </ul>
 </div>
@@ -307,7 +305,8 @@
     <div class="modal-content">
         <div class="row">
             <div class="input-field col s12">
-                <input style="text-transform: capitalize" id="txt_person_name" type="text" onkeyup="update_display_name(this)" onchange="update_display_name(this)">
+                <input style="text-transform: capitalize" id="txt_person_name" type="text"
+                       onkeyup="update_display_name(this)" onchange="update_display_name(this)">
                 <label for="txt_unit_code">Display Name</label>
             </div>
         </div>
@@ -390,8 +389,6 @@
         });
     }
 </script>
-
-
 
 
 </body>
