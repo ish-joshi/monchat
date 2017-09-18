@@ -46,11 +46,12 @@
 <div class="row">
 
 
+
     <div id="messages_text_field" class="col s12 m8 offset-m2 l6 offset-l3">
         <div class="row">
             <!--TODO replace textchat and send button if fails-->
             <div class="input-field col s12">
-                <input id="txt_message_to_send" type="text">
+                <input id="txt_message_to_send" type="text" data-length="120">
                 <label for="txt_message_to_send">Message</label>
             </div>
 
@@ -202,6 +203,8 @@
 
         if (message != "" && (selected_unit != "" || selected_unit != null)) {
 
+            if(message.length <= 120){
+
             var ts = new Date().toISOString();
 
             var display_name = logged_in_name;
@@ -215,6 +218,9 @@
                 'ts': ts,
                 'dn': display_name
             });
+            }else{
+                Materialize.toast("Enter less than 120 characters.", 1000);
+            }
         } else {
             Materialize.toast("Enter something to send.", 1000);
         }
