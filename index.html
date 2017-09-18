@@ -33,7 +33,7 @@
 <div class="navbar-fixed">
 <nav>
     <div class="nav-wrapper pink">
-        <a href="#" class="brand-logo center">Unit-Chat</a>
+        <a href="#" class="brand-logo center">Monash Unit Chat</a>
     </div>
 </nav>
 </div>
@@ -97,7 +97,10 @@
                 // User is signed in.
 
                 logged_in_uid = user.uid;
-                logged_in_name = "Anonymous";
+
+                logged_in_name = localStorage.getItem("dn");
+
+                logged_in_name = logged_in_name==null ? "Anonymous" : logged_in_name;
 
                 firebase.database().ref("/online/"+logged_in_uid).set(true);
 
@@ -255,6 +258,7 @@
 
     function update_display_name(e){
         logged_in_name = e.value;
+        localStorage.setItem("dn", logged_in_name);
     }
 
 
