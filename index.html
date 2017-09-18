@@ -9,6 +9,7 @@
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="scripts/moment.js"></script>
 
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -39,7 +40,7 @@
 
 
 <div id="message_status" class="center">
-    <p class="grey-text">Please join a room.</p>
+    <p class="grey-text"><a class='modal-trigger' href='#modal_get_unit'>(Join a room)</a></p>
 </div>
 
 <div class="row">
@@ -54,7 +55,7 @@
             </div>
 
             <div class="input-field col s12 center">
-                <a onclick="send_message_to_room()" class="waves-effect waves-light btn">Send</a>
+                <a onclick="send_message_to_room()" class="waves-effect blue waves-light btn">Send</a>
             </div>
 
         </div>
@@ -95,6 +96,7 @@
                 // User is signed in.
 
                 logged_in_uid = user.uid;
+                logged_in_name = "Anonymous";
 
                 firebase.database().ref("/online/"+logged_in_uid).set(true);
 
@@ -133,20 +135,45 @@
         }
     }
 
+    function get_html_for_dom(data){
+        return "<p>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+    }
+
     function add_message_to_dom(message){
 
-        console.log(message);
+
 
         var messages_div = $("#unit_messages");
         messages_div.html("");
 
+        if(message == null){
+            messages_div.append("<p class='pink-text center'>Be the first one to start the conversation!</p>");
+        }
+
         for (var key in message){
-            var html_to_add = "<p>" + (message[key]['txt']) + "</p>";
+
+            var message_info = {};
+
+            var time_relative = message[key]['ts'] == null ? "" : message[key]['ts'];
+            time_relative = moment(time_relative).fromNow();
+
+            var who = message[key]['dn'] == null ? "Anonymous" : message[key]['dn'];
+            who = who == "" ? "Anonymous" : who;
+            who = who == undefined ? "Anonymous" : who;
+
+            message_info['ts'] = time_relative;
+            message_info['txt'] = (message[key]['txt']);
+            message_info['who'] = who;
+
+
+
+            var html_to_add = get_html_for_dom(message_info);
+
             messages_div.append(html_to_add);
         }
 
         messages_div.animate({scrollTop: messages_div.get(0).scrollHeight}, 2000);
-
+        $('.modal').modal();
 
     }
 
@@ -159,9 +186,11 @@
 
             add_message_to_dom(snapshot.val());
 
-            $("#message_status").html("Joined room <strong>"+ selected_unit + "</strong>");
+            $("#message_status").html("Joined room <strong>"+ selected_unit + "</strong> <a class='grey-text modal-trigger' href='#modal_get_unit'>" + " (Change) "  + "</a>");
 
             localStorage.setItem("selected_unit", selected_unit);
+
+            add_file_listener();
 
         });
 
@@ -171,11 +200,24 @@
         var message_text = $("#txt_message_to_send");
         var message = message_text.val();
 
-        message_text.val("");
-        message_text.focus();
+        if (message != "" && (selected_unit != "" || selected_unit != null)) {
 
-        firebase.database().ref("/chats/" + selected_unit).push({'id': logged_in_uid , 'txt':message});
+            var ts = new Date().toISOString();
 
+            var display_name = logged_in_name;
+
+            message_text.val("");
+            message_text.focus();
+
+            firebase.database().ref("/chats/" + selected_unit).push({
+                'id': logged_in_uid,
+                'txt': message,
+                'ts': ts,
+                'dn': display_name
+            });
+        } else {
+            Materialize.toast("Enter something to send.", 1000);
+        }
     }
 
     function on_join_clicked(unit){
@@ -205,6 +247,10 @@
         });
     }
 
+    function update_display_name(e){
+        logged_in_name = e.value;
+    }
+
 
     function get_random_text() {
 
@@ -220,9 +266,15 @@
 
 
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large pink modal-trigger" href="#modal_get_unit">
-        <i class="large material-icons">add</i>
+    <a class="btn-floating btn-large pink">
+        <i class="large material-icons">settings</i>
     </a>
+    <ul>
+        <li><a class="btn-floating green modal-trigger" href="#modal_get_unit"><i class="material-icons">add</i></a></li>
+        <li><a class="btn-floating blue modal-trigger" href="#modal_get_name"><i class="material-icons">perm_identity</i></a></li>
+        <li><a class="btn-floating red" onclick="localStorage.clear(); location.reload();"><i class="material-icons">delete</i></a></li>
+        <!--<li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>-->
+    </ul>
 </div>
 
 <!-- Modal Structure -->
@@ -241,6 +293,93 @@
     </div>
 </div>
 
+<div id="modal_get_name" class="modal">
+    <div class="modal-content">
+        <div class="row">
+            <div class="input-field col s12">
+                <input style="text-transform: capitalize" id="txt_person_name" type="text" onkeyup="update_display_name(this)" onchange="update_display_name(this)">
+                <label for="txt_unit_code">Display Name</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-action modal-close waves-effect btn-flat">Save</a>
+        <a href="#" class="modal-action modal-close waves-effect btn-flat">Close</a>
+    </div>
+</div>
+
+
+<script>
+    function add_file_listener() {
+        var dropZone = document.getElementById('unit_messages');
+
+        dropZone.addEventListener('dragover', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        });
+
+        function upload(file) {
+            //TODO upload progress bar
+            if (file.size < 3000000) {
+
+                var fb_storage = firebase.storage().ref();
+                var file_ref = fb_storage.child('chats/' + selected_unit + "/" + get_random_text() + file.name);
+
+                console.log(file);
+
+                var task = file_ref.put(file);
+                task.on('state_changed', function (snapshot) {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+                    switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED:
+                            break;
+                        case firebase.storage.TaskState.RUNNING:
+                            break;
+                    }
+                }, function (error) {
+                    Materialize.toast("Couldn't upload file.", 1000);
+                }, function () {
+
+                    var display_name = logged_in_name;
+                    var ts = new Date().toISOString();
+
+                    console.log(task.snapshot.downloadURL);
+
+                    firebase.database().ref("/chats/" + selected_unit).push({
+                        'id': logged_in_uid,
+                        'txt': task.snapshot.downloadURL,
+                        'ts': ts,
+                        'dn': display_name
+                    });
+
+                });
+            } else {
+                Materialize.toast("File is too big.", 1000);
+            }
+        }
+
+
+        // Get file data on drop
+        dropZone.addEventListener('drop', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            var files = e.dataTransfer.files; // Array of all files
+
+            if (files.length == 1) {
+                var file = files[0];
+                if (file.size < 2000000) {
+                    upload(file);
+                } else {
+                    Materialize.toast("File is too big.", 1000);
+                }
+            } else {
+                Materialize.toast("Select one file only.", 1000);
+            }
+        });
+    }
+</script>
 
 
 
