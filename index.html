@@ -20,7 +20,7 @@
         }
 
         #unit_messages {
-            max-height: 600px;
+            height: 400px;
             overflow-y: auto;
         }
 
@@ -134,6 +134,7 @@
     function add_message_to_dom(message){
         var messages_div = $("#unit_messages");
         messages_div.html("");
+
         for (var key in message){
             var html_to_add = "<p>" + (message[key]['txt']) + "</p>";
             messages_div.append(html_to_add);
@@ -165,7 +166,8 @@
         var message_text = $("#txt_message_to_send");
         var message = message_text.val();
 
-        message_text.html("");
+        message_text.val("");
+        message_text.focus();
 
         firebase.database().ref("/chats/" + selected_unit).push({'id': logged_in_uid , 'txt':message});
 
