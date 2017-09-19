@@ -124,6 +124,8 @@
 
                 firebase.database().ref("/online/" + logged_in_uid).set(true);
 
+                add_file_listener();
+
                 selected_unit = localStorage.getItem("selected_unit");
 
                 if (selected_unit) {
@@ -213,7 +215,6 @@
 
         $('#modal_get_unit').modal('close');
 
-        add_file_listener();
 
         ga('send', 'event', 'Join', selected_unit, 'Campaign');
 
