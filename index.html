@@ -217,9 +217,12 @@
 
         load_mode(pref);
 
-        ga('send', 'event', 'Toggle_Needed', to_toggle, 'Campaign');
-        ga('send', 'event', 'Toggle', pref, 'Campaign');
-
+        try {
+            ga('send', 'event', 'Toggle_Needed', to_toggle, 'Campaign');
+            ga('send', 'event', 'Toggle', pref, 'Campaign');
+        }catch(err){
+            console.log("Couldn't log analytics event.");
+        }
 
     }
 
