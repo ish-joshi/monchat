@@ -57,7 +57,19 @@
 <div class="row">
 
 
-    <div id="messages_text_field" class="col s12 m8 offset-m2 l6 offset-l3">
+
+
+    <div class="col s12 m8 offset-m2 l6 offset-l3">
+
+        <div class="progress" id="progress_file_upload" style="display: none">
+            <div class="indeterminate"></div>
+        </div>
+
+
+    </div>
+    <div id="unit_messages" class="col s12 m8 offset-m2 l6 offset-l3"></div>
+
+    <div style="padding: 2%;" id="messages_text_field" class="col s12 m8 offset-m2 l6 offset-l3">
         <div class="row">
             <!--TODO replace textchat and send button if fails-->
             <div class="input-field col s12">
@@ -70,19 +82,6 @@
             </div>
 
         </div>
-    </div>
-
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-
-        <div class="progress" id="progress_file_upload" style="display: none">
-            <div class="indeterminate"></div>
-        </div>
-
-
-    </div>
-    <div id="unit_messages" class="col s12 m8 offset-m2 l6 offset-l3"></div>
-    <div class="col s12 m8 offset-m2 l6 offset-l3">
-        <p class="center grey-text">Drag and drop above, to send a file.</p>
     </div>
 
 
@@ -169,76 +168,46 @@
         }
     }
 
-    function add_message_to_dom(message, boolean) {
+    function add_message_to_dom(message) {
 
 
         var messages_div = $("#unit_messages");
-
-        if(boolean) {
-            messages_div.html("");
-        }
+        messages_div.html("");
 
         if (message == null) {
             messages_div.append("<p class='pink-text center'>Be the first one to start the conversation!</p>");
         }
 
-        if(!boolean) {
+        for (var key in message) {
+
             var message_info = {};
 
-            var time_relative = message['ts'] == null ? "" : message['ts'];
+            var time_relative = message[key]['ts'] == null ? "" : message[key]['ts'];
             time_relative = moment(time_relative).fromNow();
 
-            var who = message['dn'] == null ? "Anonymous" : message['dn'];
+            var who = message[key]['dn'] == null ? "Anonymous" : message[key]['dn'];
             who = who == "" ? "Anonymous" : who;
             who = who == undefined ? "Anonymous" : who;
 
             message_info['ts'] = time_relative;
-            message_info['txt'] = (message['txt']);
+            message_info['txt'] = (message[key]['txt']);
             message_info['who'] = who;
 
-            var link = message['link'];
-            link = link == null ? "" : link;
+            var link = message[key]['link'];
+            link = link==null ? "" : link;
             message_info['link'] = link;
 
 
             var html_to_add = get_html_for_dom(message_info);
 
             messages_div.append(html_to_add);
-        }else {
-            for (var key in message) {
-
-                var message_info = {};
-
-                var time_relative = message[key]['ts'] == null ? "" : message[key]['ts'];
-                time_relative = moment(time_relative).fromNow();
-
-                var who = message[key]['dn'] == null ? "Anonymous" : message[key]['dn'];
-                who = who == "" ? "Anonymous" : who;
-                who = who == undefined ? "Anonymous" : who;
-
-                message_info['ts'] = time_relative;
-                message_info['txt'] = (message[key]['txt']);
-                message_info['who'] = who;
-
-                var link = message[key]['link'];
-                link = link == null ? "" : link;
-                message_info['link'] = link;
-
-
-                var html_to_add = get_html_for_dom(message_info);
-
-                messages_div.append(html_to_add);
-
-            }
         }
+
         messages_div.animate({scrollTop: messages_div.get(0).scrollHeight}, 2000);
         $('.modal').modal();
 
     }
 
-    function load_previous_messages(){
-
-    }
     function join() {
 
         $('#modal_get_unit').modal('close');
@@ -246,29 +215,18 @@
 
         ga('send', 'event', 'Join', selected_unit, 'Campaign');
 
-
         var message_ref = firebase.database().ref('chats/' + selected_unit);
+        message_ref.on('value', function (snapshot) {
 
-//        message_ref.once('value').then(function (snapshot) {
-//            add_message_to_dom(snapshot.val(), true);
-//
-//            $("#message_status").html("Joined room <strong>" + selected_unit + "</strong> <a class='grey-text modal-trigger' href='#modal_get_unit'>" + " (Change) " + "</a>");
-//
-//            localStorage.setItem("selected_unit", selected_unit);
-//
-//        });
-
-        message_ref.limitToLast(70).on('child_added', function (snapshot) {
+            add_message_to_dom(snapshot.val());
 
             $("#message_status").html("Joined room <strong>" + selected_unit + "</strong> <a class='grey-text modal-trigger' href='#modal_get_unit'>" + " (Change) " + "</a>");
 
             localStorage.setItem("selected_unit", selected_unit);
 
-            add_message_to_dom(snapshot.val(), false);
+
+
         });
-
-
-
 
     }
 
