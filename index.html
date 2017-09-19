@@ -182,13 +182,15 @@
             messages_div.append("<p class='pink-text center'>Be the first one to start the conversation!</p>");
         }
 
+        var message_info = {};
+        var who, link, time_relative, html_to_add;
         if(!boolean) {
-            var message_info = {};
 
-            var time_relative = message['ts'] == null ? "" : message['ts'];
+
+            time_relative = message['ts'] == null ? "" : message['ts'];
             time_relative = moment(time_relative).fromNow();
 
-            var who = message['dn'] == null ? "Anonymous" : message['dn'];
+            who = message['dn'] == null ? "Anonymous" : message['dn'];
             who = who == "" ? "Anonymous" : who;
             who = who == undefined ? "Anonymous" : who;
 
@@ -196,23 +198,23 @@
             message_info['txt'] = (message['txt']);
             message_info['who'] = who;
 
-            var link = message['link'];
+            link = message['link'];
             link = link == null ? "" : link;
             message_info['link'] = link;
 
 
-            var html_to_add = get_html_for_dom(message_info);
+            html_to_add = get_html_for_dom(message_info);
 
             messages_div.append(html_to_add);
         }else {
             for (var key in message) {
 
-                var message_info = {};
+                message_info = {};
 
-                var time_relative = message[key]['ts'] == null ? "" : message[key]['ts'];
+                time_relative = message[key]['ts'] == null ? "" : message[key]['ts'];
                 time_relative = moment(time_relative).fromNow();
 
-                var who = message[key]['dn'] == null ? "Anonymous" : message[key]['dn'];
+                who = message[key]['dn'] == null ? "Anonymous" : message[key]['dn'];
                 who = who == "" ? "Anonymous" : who;
                 who = who == undefined ? "Anonymous" : who;
 
@@ -220,12 +222,12 @@
                 message_info['txt'] = (message[key]['txt']);
                 message_info['who'] = who;
 
-                var link = message[key]['link'];
+                link = message[key]['link'];
                 link = link == null ? "" : link;
                 message_info['link'] = link;
 
 
-                var html_to_add = get_html_for_dom(message_info);
+                html_to_add = get_html_for_dom(message_info);
 
                 messages_div.append(html_to_add);
 
