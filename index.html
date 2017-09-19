@@ -17,7 +17,7 @@
 
     <style>
         #message_status {
-            padding: 3%;
+            padding: 2%;
         }
 
         #unit_messages {
@@ -60,7 +60,19 @@
 
         </div>
     </div>
+
+    <div class="col s12 m8 offset-m2 l6 offset-l3">
+
+        <div class="progress" id="progress_file_upload" style="display: none">
+            <div class="indeterminate"></div>
+        </div>
+
+
+    </div>
     <div id="unit_messages" class="col s12 m8 offset-m2 l6 offset-l3">
+
+
+
 
     </div>
 
@@ -137,7 +149,13 @@
     }
 
     function get_html_for_dom(data) {
-        return "<p class=''>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+
+        if(data['link']=="") {
+
+            return "<p class=''>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+        }else {
+            return "<p class=''><a target='_blank' href='" + data['link'] +"'>" + data['txt'] + "</a><br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+        }
     }
 
     function add_message_to_dom(message) {
@@ -165,6 +183,10 @@
             message_info['txt'] = (message[key]['txt']);
             message_info['who'] = who;
 
+            var link = message[key]['link'];
+            link = link==null ? "" : link;
+            message_info['link'] = link;
+
 
             var html_to_add = get_html_for_dom(message_info);
 
@@ -180,6 +202,8 @@
 
         $('#modal_get_unit').modal('close');
 
+        add_file_listener();
+
         var message_ref = firebase.database().ref('chats/' + selected_unit);
         message_ref.on('value', function (snapshot) {
 
@@ -189,7 +213,7 @@
 
             localStorage.setItem("selected_unit", selected_unit);
 
-            add_file_listener();
+
 
         });
 
@@ -199,29 +223,37 @@
         var message_text = $("#txt_message_to_send");
         var message = message_text.val();
 
-        if (message != "" && (selected_unit != "" || selected_unit != null)) {
 
-            if (message.length <= 120) {
 
-                var ts = new Date().toISOString();
+        if  (selected_unit != "" || selected_unit != null) {
+            if (message != "") {
 
-                var display_name = logged_in_name;
+                if (message.length <= 120) {
 
-                message_text.val("");
-                message_text.focus();
+                    var ts = new Date().toISOString();
 
-                firebase.database().ref("/chats/" + selected_unit).push({
-                    'id': logged_in_uid,
-                    'txt': message,
-                    'ts': ts,
-                    'dn': display_name
-                });
+                    var display_name = logged_in_name;
+
+                    message_text.val("");
+                    message_text.focus();
+
+                    firebase.database().ref("/chats/" + selected_unit).push({
+                        'id': logged_in_uid,
+                        'txt': message,
+                        'ts': ts,
+                        'dn': display_name
+                    });
+                } else {
+                    Materialize.toast("Enter less than 120 characters.", 1000);
+                }
             } else {
-                Materialize.toast("Enter less than 120 characters.", 1000);
+                Materialize.toast("Enter something to send.", 1000);
             }
         } else {
-            Materialize.toast("Enter something to send.", 1000);
+            Materialize.toast("Please connect to a room.", 1000);
+            $("#modal_get_unit").modal('show');
         }
+
     }
 
     function on_join_clicked(unit) {
@@ -330,43 +362,49 @@
 
         function upload(file) {
             //TODO upload progress bar
-            if (file.size < 3000000) {
+            var fb_storage = firebase.storage().ref();
+            var file_ref = fb_storage.child('chats/' + selected_unit + "/" + get_random_text() + file.name);
 
-                var fb_storage = firebase.storage().ref();
-                var file_ref = fb_storage.child('chats/' + selected_unit + "/" + get_random_text() + file.name);
+            $("#progress_file_upload").css('display', 'block');
 
-                console.log(file);
+            console.log(file);
 
-                var task = file_ref.put(file);
-                task.on('state_changed', function (snapshot) {
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            var task = file_ref.put(file);
+            console.log(task);
 
-                    switch (snapshot.state) {
-                        case firebase.storage.TaskState.PAUSED:
-                            break;
-                        case firebase.storage.TaskState.RUNNING:
-                            break;
-                    }
-                }, function (error) {
-                    Materialize.toast("Couldn't upload file.", 1000);
-                }, function () {
+            task.on('state_changed', function (snapshot) {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-                    var display_name = logged_in_name;
-                    var ts = new Date().toISOString();
+                switch (snapshot.state) {
+                    case firebase.storage.TaskState.PAUSED:
+                        break;
+                    case firebase.storage.TaskState.RUNNING:
+                        break;
+                }
+            }, function (error) {
+                Materialize.toast("Couldn't upload file.", 1000);
 
-                    console.log(task.snapshot.downloadURL);
+                $("#progress_file_upload").css('display', 'none');
+            }, function () {
 
-                    firebase.database().ref("/chats/" + selected_unit).push({
-                        'id': logged_in_uid,
-                        'txt': task.snapshot.downloadURL,
-                        'ts': ts,
-                        'dn': display_name
-                    });
+                var display_name = logged_in_name;
+                var ts = new Date().toISOString();
 
+                console.log(task.snapshot.metadata.name);
+
+                console.log(task.snapshot.downloadURL);
+
+                firebase.database().ref("/chats/" + selected_unit).push({
+                    'id': logged_in_uid,
+                    'txt': task.snapshot.metadata.name,
+                    'link': task.snapshot.downloadURL,
+                    'ts': ts,
+                    'dn': display_name
                 });
-            } else {
-                Materialize.toast("File is too big.", 1000);
-            }
+
+                $("#progress_file_upload").css('display', 'none');
+
+            });
         }
 
 
@@ -378,8 +416,10 @@
 
             if (files.length == 1) {
                 var file = files[0];
-                if (file.size < 2000000) {
+                if (file.size < 3000000) {
+
                     upload(file);
+
                 } else {
                     Materialize.toast("File is too big.", 1000);
                 }
