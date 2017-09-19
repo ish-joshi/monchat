@@ -466,7 +466,7 @@
         function upload(file) {
             //TODO upload progress bar
             var fb_storage = firebase.storage().ref();
-            var file_ref = fb_storage.child('chats/' + selected_unit + "/" + get_random_text() + file.name);
+            var file_ref = fb_storage.child('chats/' + selected_unit + "/" + get_random_text() + "__" + file.name);
 
             $("#progress_file_upload").css('display', 'block');
 
