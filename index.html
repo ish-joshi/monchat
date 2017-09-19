@@ -36,6 +36,14 @@
             overflow-y: auto;
         }
 
+        p, #message_status, input {
+            color: #2196F3;
+        }
+
+        body {
+            /*background-color: black;*/
+        }
+
     </style>
 
 </head>
@@ -45,6 +53,10 @@
     <nav>
         <div class="nav-wrapper pink">
             <a href="#" class="brand-logo center">Unit Chat</a>
+
+            <ul class="right">
+                <li><a href="#" onclick="toggle_dark_mode(true)"><i class="material-icons">lightbulb_outline</i></a></li>
+            </ul>
         </div>
     </nav>
 </div>
@@ -111,6 +123,7 @@
     $(document).ready(function () {
         //initialize materialize components
         $('.modal').modal();
+        toggle_dark_mode(false);
 
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
@@ -155,6 +168,34 @@
         });
     });
 
+    function load_mode(pref){
+        if(pref == "light"){
+            $(document.body).css('background-color', 'white');
+        } else {
+            $(document.body).css('background-color', 'black');
+        }
+    }
+
+    function toggle_dark_mode(to_toggle){
+        console.log("Called");
+
+        var pref = localStorage.getItem("mode");
+        if (pref == null){
+            localStorage.setItem("mode", "light");
+            pref = "dark";
+        }
+
+        if(to_toggle) {
+            //Toggle
+            pref = pref == "light" ? "dark" : "light";
+            localStorage.setItem("mode", pref);
+        }
+
+        load_mode(pref);
+
+
+    }
+
     function user_closed_state() {
         if (logged_in_uid) {
             firebase.database().ref("/online/" + logged_in_uid).set(null);
@@ -167,7 +208,7 @@
 
             return "<p class=''>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
         }else {
-            return "<p class=''><a target='_blank' href='" + data['link'] +"'>" + data['txt'] + "</a><br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+            return "<p class=''><a style='text-decoration: underline' target='_blank' href='" + data['link'] +"'>" + data['txt'] + "</a><br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
         }
     }
 
