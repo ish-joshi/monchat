@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="css/pace-theme.css">
     <script src="scripts/pace.js"></script>
 
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-104536860-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments)};
+        gtag('js', new Date());
+
+        gtag('config', 'UA-104536860-2');
+    </script>
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script src="scripts/moment.js"></script>
@@ -205,6 +215,8 @@
 
         add_file_listener();
 
+        ga('send', 'event', 'Join', selected_unit, 'Campaign');
+
         var message_ref = firebase.database().ref('chats/' + selected_unit);
         message_ref.on('value', function (snapshot) {
 
@@ -244,6 +256,9 @@
                         'ts': ts,
                         'dn': display_name
                     });
+
+                    ga('send', 'event', 'Message', selected_unit, 'Campaign');
+
                 } else {
                     Materialize.toast("Enter less than 120 characters.", 1000);
                 }
@@ -447,6 +462,7 @@
         });
     }
 </script>
+
 
 
 </body>
