@@ -219,7 +219,7 @@
         ga('send', 'event', 'Join', selected_unit, 'Campaign');
 
         var message_ref = firebase.database().ref('chats/' + selected_unit);
-        message_ref.on('value', function (snapshot) {
+        message_ref.limitToLast(60).on('value', function (snapshot) {
 
             add_message_to_dom(snapshot.val());
 
