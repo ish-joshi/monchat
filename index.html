@@ -183,6 +183,9 @@
         if (pref == null){
             localStorage.setItem("mode", "light");
             pref = Math.random() < 0.5 ? "light" : "dark";
+
+            ga('send', 'event', 'FirstColorPreference', pref, 'Campaign');
+
         }
 
         if(to_toggle) {
@@ -191,7 +194,11 @@
             localStorage.setItem("mode", pref);
         }
 
+
         load_mode(pref);
+
+        ga('send', 'event', 'Toggle_Needed', to_toggle+"", 'Campaign');
+        ga('send', 'event', 'Toggle', pref, 'Campaign');
 
 
     }
