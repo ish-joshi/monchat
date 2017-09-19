@@ -182,7 +182,7 @@
         var pref = localStorage.getItem("mode");
         if (pref == null){
             localStorage.setItem("mode", "light");
-            pref = "dark";
+            pref = Math.random() < 0.5 ? "light" : "dark";
         }
 
         if(to_toggle) {
