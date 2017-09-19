@@ -11,7 +11,10 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-104536860-2"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments)};
+        function gtag() {
+            dataLayer.push(arguments)
+        }
+        ;
         gtag('js', new Date());
 
         gtag('config', 'UA-104536860-2');
@@ -36,6 +39,25 @@
             overflow-y: auto;
         }
 
+        #unit_messages::-webkit-scrollbar-track
+        {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
+            background-color: #F5F5F5;
+        }
+
+        #unit_messages::-webkit-scrollbar
+        {
+            width: 3px;
+            background-color: #F5F5F5;
+        }
+
+        #unit_messages::-webkit-scrollbar-thumb
+        {
+            background-color: #0079ff;
+            /*border: 2px solid #100404;*/
+        }
+
+
         p, #message_status, input {
             color: #2196F3;
         }
@@ -55,7 +77,8 @@
             <a href="#" class="brand-logo center">Unit Chat</a>
 
             <ul class="right">
-                <li><a href="#" onclick="toggle_dark_mode(true)"><i class="material-icons">lightbulb_outline</i></a></li>
+                <li><a href="#" onclick="toggle_dark_mode(true)"><i class="material-icons">lightbulb_outline</i></a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -93,8 +116,6 @@
 
     </div>
     <div id="unit_messages" class="col s12 m8 offset-m2 l6 offset-l3">
-
-
 
 
     </div>
@@ -136,7 +157,7 @@
                 logged_in_name = logged_in_name == null ? "Anonymous" : logged_in_name;
 
                 firebase.database().ref("/online/" + logged_in_uid).set(true);
-                
+
                 add_file_listener();
 
                 selected_unit = localStorage.getItem("selected_unit");
@@ -168,19 +189,19 @@
         });
     });
 
-    function load_mode(pref){
-        if(pref == "light"){
+    function load_mode(pref) {
+        if (pref == "light") {
             $(document.body).css('background-color', 'white');
         } else {
             $(document.body).css('background-color', 'black');
         }
     }
 
-    function toggle_dark_mode(to_toggle){
+    function toggle_dark_mode(to_toggle) {
         console.log("Called");
 
         var pref = localStorage.getItem("mode");
-        if (pref == null){
+        if (pref == null) {
             localStorage.setItem("mode", "light");
             pref = Math.random() < 0.5 ? "light" : "dark";
 
@@ -188,7 +209,7 @@
 
         }
 
-        if(to_toggle) {
+        if (to_toggle) {
             //Toggle
             pref = pref == "light" ? "dark" : "light";
             localStorage.setItem("mode", pref);
@@ -211,11 +232,11 @@
 
     function get_html_for_dom(data) {
 
-        if(data['link']=="") {
+        if (data['link'] == "") {
 
             return "<p class=''>" + data['txt'] + "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
-        }else {
-            return "<p class=''><a style='text-decoration: underline' target='_blank' href='" + data['link'] +"'>" + data['txt'] + "</a><br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
+        } else {
+            return "<p class=''><a style='text-decoration: underline' target='_blank' href='" + data['link'] + "'>" + data['txt'] + "</a><br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
         }
     }
 
@@ -245,7 +266,7 @@
             message_info['who'] = who;
 
             var link = message[key]['link'];
-            link = link==null ? "" : link;
+            link = link == null ? "" : link;
             message_info['link'] = link;
 
 
@@ -276,7 +297,6 @@
             localStorage.setItem("selected_unit", selected_unit);
 
 
-
         });
 
     }
@@ -286,8 +306,7 @@
         var message = message_text.val();
 
 
-
-        if  (selected_unit != "" || selected_unit != null) {
+        if (selected_unit != "" || selected_unit != null) {
             if (message != "") {
 
                 if (message.length <= 120) {
@@ -378,7 +397,8 @@
                 class="material-icons">perm_identity</i></a></li>
         <li><a class="btn-floating red" onclick="localStorage.clear(); location.reload();"><i class="material-icons">delete</i></a>
         </li>
-        <li><a class="btn-floating blue modal-trigger" href="#modal_info_about"><i class="material-icons">info</i></a></li>
+        <li><a class="btn-floating blue modal-trigger" href="#modal_info_about"><i class="material-icons">info</i></a>
+        </li>
     </ul>
 </div>
 
@@ -417,7 +437,6 @@
 <div id="modal_info_about" class="modal">
     <div class="modal-content">
         <h4>About</h4>
-
 
 
         <p>
@@ -511,7 +530,6 @@
         });
     }
 </script>
-
 
 
 </body>
