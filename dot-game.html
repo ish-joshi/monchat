@@ -46,6 +46,10 @@
     };
     heroImage.src = "images/hero.png";
 
+
+
+
+
     // Monster image
     var monsterReady = false;
     var monsterImage = new Image();
@@ -56,6 +60,9 @@
 
     var monsterImage2 = new Image();
     monsterImage2.src = "images/blue__.png";
+
+    var aim = new Image();
+    aim.src = "images/aim.png";
 
     // Game objects
     var hero = {
@@ -85,13 +92,19 @@
 
         monsters = [];
 
-        AMOUNT_OF_MONSTORS = 40;
+        var ex = 32 + (Math.random() * (canvas.width - 64));
+        var ey = 32 + (Math.random() * (canvas.height - 64));
+
+        end_loc = {x:ex, y:ey};
+
+        AMOUNT_OF_MONSTORS = 120;
 
         for (var i = 0; i < AMOUNT_OF_MONSTORS; i++){
             var mons = {};
             mons.x = 32 + (Math.random() * (canvas.width - 64));
             mons.y = 32 + (Math.random() * (canvas.height - 64));
             mons.img = Math.random() < 0.5 ? monsterImage : monsterImage2;
+
             monsters.push(mons);
         }
 
@@ -104,12 +117,19 @@
         monster.y = 32 + (Math.random() * (canvas.height - 64));*/
     };
 
+    function is_in_range(v, s, e){
+        return v>=s && v < e;
+    }
+
     function is_touching(hx, hy, mx, my){
         BY_FAC = 8;
-        return hx <= (mx + BY_FAC)
-                && mx <= (hx + BY_FAC)
-                && hy <= (my + BY_FAC)
-                && my <= (my + BY_FAC)
+
+        return is_in_range(hx, mx - BY_FAC, mx + BY_FAC) && is_in_range(hy, my - BY_FAC, my + BY_FAC);
+//
+//        return hx <= (mx + BY_FAC)
+//                && mx <= (hx + BY_FAC)
+//                && hy <= (my + BY_FAC)
+//                && my <= (my + BY_FAC)
     }
     // Update game objects
     var update = function (modifier) {
@@ -129,6 +149,12 @@
             hero.x += hero.speed * modifier;
         }
 
+        if (is_touching(hero.x, hero.y, end_loc.x, end_loc.y)){
+            alert("You made it safely.");
+            location.reload();
+
+        }
+
         for (var i = 0; i < monsters.length; i++){
 
 
@@ -138,9 +164,10 @@
 
 
 
+
             if (is_touching(hero.x, hero.y, monster.x, monster.y)) {
-//                alert("You've been caught!");
-                reset();
+                alert("You've been caught!");
+                location.reload();
                 console.log("reset called");
                 console.log(i, hero.x, hero.y, "MONSTER", monster.x, monster.y);
                 break;
@@ -183,6 +210,8 @@
                 ctx.drawImage(monsters[i].img, monsters[i].x, monsters[i].y);
 
             }
+
+            ctx.drawImage(aim, end_loc.x, end_loc.y);
 //            ctx.drawImage(monsterImage, monsters[0].x, monsters[0].y);
         }
 
@@ -239,7 +268,7 @@
 <style>
     button {
         width: 200px;
-        height: 200px;
+        height: 50px;
     }
 </style>
 
