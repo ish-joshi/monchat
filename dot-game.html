@@ -212,10 +212,48 @@
     var w = window;
     requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
+    function mv(a){
+        switch(a){
+            case "up":
+                hero.y -= 2*2;
+                break;
+            case "dn":
+                hero.y += 2*2;
+                break;
+            case "lf":
+                hero.x -= 2*2;
+                break;
+            case "ri":
+                hero.x += 2*2;
+                break;
+            default:
+                break;
+        }
+    }
     // Let's play this game!
     var then = Date.now();
     reset();
     main();
 </script>
+
+<style>
+    button {
+        width: 200px;
+        height: 200px;
+    }
+</style>
+
+<table>
+    <tr>
+        <td></td>
+        <td><button onclick="mv('up')">UP</button></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><button onclick="mv('lf')">LEFT</button></td>
+        <td><button onclick="mv('dn')">DOWN</button></td>
+        <td><button onclick="mv('ri')">RIGHT</button></td>
+    </tr>
+</table>
 </body>
 </html>
