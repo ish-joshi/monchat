@@ -103,9 +103,13 @@
             var mons = {};
             mons.x = 32 + (Math.random() * (canvas.width - 64));
             mons.y = 32 + (Math.random() * (canvas.height - 64));
-            mons.img = Math.random() < 0.5 ? monsterImage : monsterImage2;
 
-            monsters.push(mons);
+            if(!is_in_range(hero.x, mons.x - 10, mons.x + 10)) {
+
+                mons.img = Math.random() < 0.5 ? monsterImage : monsterImage2;
+
+                monsters.push(mons);
+            }
         }
 
 //        monsters = [{x: 250, y:300}];
@@ -177,6 +181,7 @@
             var size = Math.floor(Math.random() * FACTOR);
             monsters[i].x += (Math.random() < 0.5 ? -size : size);
             monsters[i].y += (Math.random() < 0.5 ? -size : size);
+
 
         }
 
