@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Simple Canvas Game</title>
+    <style>
+
+    </style>
+</head>
+<body>
+
+<!--<canvas id="dots" class="dots"></canvas>-->
+<script>
+    // Create the canvas
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = 1600;
+    canvas.height = 703;
+    document.body.appendChild(canvas);
+
+    // Background image
+    var bgReady = false;
+    var bgImage = new Image();
+    bgImage.onload = function () {
+        bgReady = true;
+    };
+    bgImage.src = "images/background.png";
+
+    // Hero image
+    var heroReady = false;
+    var heroImage = new Image();
+    heroImage.onload = function () {
+        heroReady = true;
+    };
+    heroImage.src = "images/hero.png";
+
+    // Monster image
+    var monsterReady = false;
+    var monsterImage = new Image();
+    monsterImage.onload = function () {
+        monsterReady = true;
+    };
+    monsterImage.src = "images/monster.png";
+
+    var monsterImage2 = new Image();
+    monsterImage2.src = "images/blue__.png";
+
+    // Game objects
+    var hero = {
+        speed: 64 // movement in pixels per second
+    };
+//    var monster = {};
+    var monstersCaught = 0;
+
+    // Handle keyboard controls
+    var keysDown = {};
+
+    addEventListener("keydown", function (e) {
+        keysDown[e.keyCode] = true;
+    }, false);
+
+    addEventListener("keyup", function (e) {
+        delete keysDown[e.keyCode];
+    }, false);
+
+    // Reset the game when the player catches a monster
+    var reset = function () {
+        hero.x = canvas.width / 2;
+        hero.y = canvas.height / 2;
+
+//        hero.x = 210;
+//        hero.y = 295;
+
+        monsters = [];
+
+        AMOUNT_OF_MONSTORS = 20;
+
+        for (var i = 0; i < AMOUNT_OF_MONSTORS; i++){
+            var mons = {};
+            mons.x = 32 + (Math.random() * (canvas.width - 64));
+            mons.y = 32 + (Math.random() * (canvas.height - 64));
+            mons.img = Math.random() < 0.5 ? monsterImage : monsterImage2;
+            monsters.push(mons);
+        }
+
+//        monsters = [{x: 250, y:300}];
+
+        console.log(monsters);
+
+        /*// Throw the monster somewhere on the screen randomly
+        monster.x = 32 + (Math.random() * (canvas.width - 64));
+        monster.y = 32 + (Math.random() * (canvas.height - 64));*/
+    };
+
+    function is_touching(hx, hy, mx, my){
+        BY_FAC = 8;
+        return hx <= (mx + BY_FAC)
+                && mx <= (hx + BY_FAC)
+                && hy <= (my + BY_FAC)
+                && my <= (my + BY_FAC)
+    }
+    // Update game objects
+    var update = function (modifier) {
+
+
+
+        if (38 in keysDown) { // Player holding up
+            hero.y -= hero.speed * modifier;
+        }
+        if (40 in keysDown) { // Player holding down
+            hero.y += hero.speed * modifier;
+        }
+        if (37 in keysDown) { // Player holding left
+            hero.x -= hero.speed * modifier;
+        }
+        if (39 in keysDown) { // Player holding right
+            hero.x += hero.speed * modifier;
+        }
+
+        for (var i = 0; i < monsters.length; i++){
+
+
+            monster = monsters[i];
+
+//            console.log(i, monster);
+
+
+
+            if (is_touching(hero.x, hero.y, monster.x, monster.y)) {
+//                alert("You've been caught!");
+                reset();
+                console.log("reset called");
+                console.log(i, hero.x, hero.y, "MONSTER", monster.x, monster.y);
+                break;
+            }
+
+            FACTOR = 2;
+            var size = Math.floor(Math.random() * FACTOR);
+            monsters[i].x += (Math.random() < 0.5 ? -size : size);
+            monsters[i].y += (Math.random() < 0.5 ? -size : size);
+
+        }
+
+        // Are they touching?
+//        if (
+//                hero.x <= (monster.x + 32)
+//                && monster.x <= (hero.x + 32)
+//                && hero.y <= (monster.y + 32)
+//                && monster.y <= (hero.y + 32)
+//        ) {
+//            alert("You've been caught!");
+//            reset();
+//        }
+    };
+
+    // Draw everything
+    var render = function () {
+        if (bgReady) {
+            ctx.drawImage(bgImage, 0, 0);
+        }
+
+        if (heroReady) {
+            ctx.drawImage(heroImage, hero.x, hero.y);
+        }
+
+        if (monsterReady) {
+            //TODO this is where you draw all monastors
+
+            for (var i = 0; i < monsters.length; i++){
+
+                ctx.drawImage(monsters[i].img, monsters[i].x, monsters[i].y);
+
+            }
+//            ctx.drawImage(monsterImage, monsters[0].x, monsters[0].y);
+        }
+
+        // Score
+        /*ctx.fillStyle = "rgb(250, 250, 250)";
+        ctx.font = "24px Helvetica";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);*/
+    };
+
+    // The main game loop
+    var main = function () {
+        var now = Date.now();
+        var delta = now - then;
+
+        update(delta / 1000);
+        render();
+
+        then = now;
+
+        // Request to do this again ASAP
+        requestAnimationFrame(main);
+    };
+
+    // Cross-browser support for requestAnimationFrame
+    var w = window;
+    requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+    // Let's play this game!
+    var then = Date.now();
+    reset();
+    main();
+</script>
+</body>
+</html>
