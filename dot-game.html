@@ -97,14 +97,14 @@
 
         end_loc = {x:ex, y:ey};
 
-        AMOUNT_OF_MONSTORS = 120;
+        AMOUNT_OF_MONSTORS = 180;
 
         for (var i = 0; i < AMOUNT_OF_MONSTORS; i++){
             var mons = {};
             mons.x = 32 + (Math.random() * (canvas.width - 64));
             mons.y = 32 + (Math.random() * (canvas.height - 64));
 
-            if(!is_in_range(hero.x, mons.x - 10, mons.x + 10)) {
+            if(!is_in_range(hero.x, mons.x - 20, mons.x + 10) && !is_in_range(hero.y, mons.y - 10, mons.y + 20)) {
 
                 mons.img = Math.random() < 0.5 ? monsterImage : monsterImage2;
 
@@ -126,7 +126,7 @@
     }
 
     function is_touching(hx, hy, mx, my){
-        BY_FAC = 12;
+        BY_FAC = 22;
 
         return is_in_range(hx, mx - BY_FAC, mx + BY_FAC) && is_in_range(hy, my - BY_FAC, my + BY_FAC);
 //
