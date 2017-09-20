@@ -153,8 +153,9 @@
             hero.x += hero.speed * modifier;
         }
 
-        if (is_touching(hero.x, hero.y, end_loc.x, end_loc.y)){
+        if (is_touching(hero.x, hero.y, end_loc.x, end_loc.y) && !complete){
             alert("You made it safely.");
+            complete = true;
             location.reload();
 
         }
@@ -169,8 +170,9 @@
 
 
 
-            if (is_touching(hero.x, hero.y, monster.x, monster.y)) {
+            if (is_touching(hero.x, hero.y, monster.x, monster.y) && !complete) {
                 alert("You've been caught!");
+                complete = true;
                 location.reload();
                 break;
             }
