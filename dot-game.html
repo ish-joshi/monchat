@@ -66,7 +66,7 @@
 
     // Game objects
     var hero = {
-        speed: 140 // movement in pixels per second
+        speed: 170 // movement in pixels per second
     };
 //    var monster = {};
     var monstersCaught = 0;
@@ -107,7 +107,7 @@
             mons.x = 32 + (Math.random() * (canvas.width - 64));
             mons.y = 32 + (Math.random() * (canvas.height - 64));
 
-            if(!is_in_range(hero.x, mons.x - 30, mons.x + 20) && !is_in_range(hero.y, mons.y - 20, mons.y + 30)) {
+            if(!is_in_range(hero.x, mons.x - 50, mons.x + 40) && !is_in_range(hero.y, mons.y - 40, mons.y + 50)) {
 
                 mons.img = Math.random() < 0.5 ? monsterImage : monsterImage2;
 
@@ -186,7 +186,7 @@
             monsters[i].x += (monsters[i].x < hero.x ? size : -size);
             monsters[i].y += (monsters[i].y < hero.y ? size : -size);
 
-            size *= 2;
+            size *= 3;
 
             monsters[i].x += (Math.random() < 0.5 ? -size : size);
             monsters[i].y += (Math.random() < 0.5 ? -size : size);
