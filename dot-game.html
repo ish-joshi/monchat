@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Simple Canvas Game</title>
+    <title>Monash election - leave me alone</title>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-104536860-2"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -66,7 +66,7 @@
 
     // Game objects
     var hero = {
-        speed: 170 // movement in pixels per second
+        speed: 180 // movement in pixels per second
     };
 //    var monster = {};
     var monstersCaught = 0;
@@ -100,7 +100,7 @@
 
         end_loc = {x:ex, y:ey};
 
-        AMOUNT_OF_MONSTORS = 80;
+        AMOUNT_OF_MONSTORS = 60;
 
         for (var i = 0; i < AMOUNT_OF_MONSTORS; i++){
             var mons = {};
@@ -180,13 +180,13 @@
                 break;
             }
 
-            FACTOR = 2;
+            FACTOR = 3;
             var size = Math.floor(Math.random() * FACTOR);
 
             monsters[i].x += (monsters[i].x < hero.x ? size : -size);
             monsters[i].y += (monsters[i].y < hero.y ? size : -size);
 
-            size *= 3;
+            size *= 1;
 
             monsters[i].x += (Math.random() < 0.5 ? -size : size);
             monsters[i].y += (Math.random() < 0.5 ? -size : size);
