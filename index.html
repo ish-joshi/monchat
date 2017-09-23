@@ -57,10 +57,6 @@
             /*border: 2px solid #100404;*/
         }
 
-        #txt_message_to_send:focus {
-            border-bottom: solid 1px #0079ff;
-        }
-
 
         p, #message_status, input {
             color: #2196F3;
@@ -155,6 +151,8 @@
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 // User is signed in.
+
+                JOINED_ROOM = false;
 
                 logged_in_uid = user.uid;
 
@@ -309,9 +307,15 @@
         $('#modal_get_unit').modal('close');
 
 
+        if(JOINED_ROOM){
+            message_ref.off();
+        }
+
         ga('send', 'event', 'Join', selected_unit, 'Campaign');
 
-        var message_ref = firebase.database().ref('chats/' + selected_unit);
+        JOINED_ROOM = true;
+
+        message_ref = firebase.database().ref('chats/' + selected_unit);
         message_ref.limitToLast(60).on('value', function (snapshot) {
 
             add_message_to_dom(snapshot.val());
