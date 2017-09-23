@@ -146,6 +146,7 @@
         $('.modal').modal();
         toggle_dark_mode(false);
 
+
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 // User is signed in.
