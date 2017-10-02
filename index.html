@@ -263,7 +263,7 @@
 
             if (is_image_file(file_name)){
                 return "<br><img class='materialboxed message_image' src='" + link + "' alt='" + file_name + "'>" +
-                        "<br> <a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br>";
+                        "<a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br>";
             } else {
                 return "<p class=''><a style='text-decoration: underline' target='_blank' href='" + link + "'>" + file_name + "</a><br> " +
                         "<a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br></p>";
