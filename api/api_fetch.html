@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script>
+
+            $.post("get_data.php", {"subject_code": "ACC1100_CL_S2_DAY"}, function(data) {
+                alert(data);
+            });
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
