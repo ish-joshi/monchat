@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="css/pace-theme.css">
     <script src="scripts/pace.js"></script>
 
-    <meta property="og:title" content="Monash Unit Chat" />
-    <meta property="og:type" content="Website" />
-    <meta property="og:description" content="Chat with peers studying the same unit as you." />
-    <meta property="og:url" content="https://ishanjoshi.me/mon-unit-chat/" />
-    <meta property="og:image" content="https://ishanjoshi.me/mon-unit-chat/img/p_1.png" />
+    <meta property="og:title" content="Monash Unit Chat"/>
+    <meta property="og:type" content="Website"/>
+    <meta property="og:description" content="Chat with peers studying the same unit as you."/>
+    <meta property="og:url" content="https://ishanjoshi.me/mon-unit-chat/"/>
+    <meta property="og:image" content="https://ishanjoshi.me/mon-unit-chat/img/p_1.png"/>
 
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
     <!--<script src="https://www.googletagmanager.com/gtag/js?id=UA-104536860-2"></script>
@@ -26,10 +26,17 @@
         gtag('config', 'UA-104536860-2');
     </script>-->
     <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                        (i[r].q = i[r].q || []).push(arguments)
+                    }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
         ga('create', 'UA-104536860-2', 'auto');
         ga('send', 'pageview');
@@ -55,24 +62,20 @@
             overflow-y: auto;
         }
 
-        #unit_messages::-webkit-scrollbar-track, body::-webkit-scrollbar-track
-        {
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
+        #unit_messages::-webkit-scrollbar-track, body::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
             background-color: #F5F5F5;
         }
 
-        #unit_messages::-webkit-scrollbar, body::-webkit-scrollbar
-        {
+        #unit_messages::-webkit-scrollbar, body::-webkit-scrollbar {
             width: 3px;
             background-color: #F5F5F5;
         }
 
-        #unit_messages::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb
-        {
+        #unit_messages::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
             background-color: #0079ff;
             /*border: 2px solid #100404;*/
         }
-
 
         p, #message_status, input {
             color: #2196F3;
@@ -119,7 +122,8 @@
 
             <div class="input-field col s12 center">
                 <a onclick="send_message_to_room(null)" class="waves-effect blue waves-light btn">Send</a>
-                <a onclick="handle_gdrive()" class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Shared Folder</a>
+                <a onclick="handle_gdrive()" class="waves-effect waves-light btn"><i
+                        class="material-icons left">cloud</i>Shared Folder</a>
             </div>
 
         </div>
@@ -215,53 +219,55 @@
         return regexp.test(s);
     }
 
-    function handle_gdrive(){
-        firebase.database().ref('gdrive/' + selected_unit).once('value').then(function (snapshot) {
-            var askforurl = true;
-            var value = snapshot.val();
-            if (value) {
-                if (isUrl(value)){
-                    window.open(value);
-                    Materialize.toast("Ensure pop-ups are not blocked.", 6000);
+    function handle_gdrive() {
+        if (selected_unit) {
+            firebase.database().ref('gdrive/' + selected_unit).once('value').then(function (snapshot) {
+                var askforurl = true;
+                var value = snapshot.val();
+                if (value) {
+                    if (isUrl(value)) {
+                        window.open(value);
+                        Materialize.toast("Ensure pop-ups are not blocked.", 6000);
 
 //                    $("#txt_message_to_send").val(value);
 
-                    firebase.database().ref("/chats/" + selected_unit).push({
-                        'id': logged_in_uid,
-                        'txt': "Shared Folder. Google Drive",
-                        'link': value,
-                        'ts': new Date().toString(),
-                        'dn': "System"
-                    });
-                    //message object is
-                    //ts = new Date(), dn = username, ts = timestamp, txt = text, link = link url.
+                        firebase.database().ref("/chats/" + selected_unit).push({
+                            'id': logged_in_uid,
+                            'txt': "Shared Folder. Google Drive",
+                            'link': value,
+                            'ts': new Date().toString(),
+                            'dn': "System"
+                        });
+                        //message object is
+                        //ts = new Date(), dn = username, ts = timestamp, txt = text, link = link url.
 //                    var message = {ts: new Date().toString(), dn: "system", txt: "Shared folder.displayfolder", link: value};
 //                    add_message_to_dom(message);
 
-                    askforurl = false;
-                } else {
-                    Materialize.toast("Invalid URL", 2000);
+                        askforurl = false;
+                    } else {
+                        Materialize.toast("Invalid URL", 2000);
+                    }
                 }
-            }
-            if(askforurl){
-                var url = prompt("Add a URL to a shared folder with Monash University students.");
-                if(url && isUrl(url)){
-                    firebase.database().ref('gdrive/' + selected_unit).set(url, function (err){
-                        if(err){
-                            Materialize.toast("Oh snap! Could not add shared folder", 2000);
-                        } else {
-                            Materialize.toast("Successfully added shared folder.", 1000);
-                            location.reload();
-                        }
-                    });
-                } else {
-                    Materialize.toast("Invalid URL entered.", 2000);
+                if (askforurl) {
+                    var url = prompt("Add a URL to a shared folder with Monash University students.");
+                    if (url && isUrl(url)) {
+                        firebase.database().ref('gdrive/' + selected_unit).set(url, function (err) {
+                            if (err) {
+                                Materialize.toast("Oh snap! Could not add shared folder", 2000);
+                            } else {
+                                Materialize.toast("Successfully added shared folder.", 1000);
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        Materialize.toast("Invalid URL entered.", 2000);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
-    function is_image_file(name){
+    function is_image_file(name) {
         //https://stackoverflow.com/questions/16002412/check-file-extension-and-alert-user-if-isnt-image-file
         return name.match(/.(jpg|jpeg|png|gif)$/i);
     }
@@ -297,7 +303,7 @@
         try {
             ga('send', 'event', 'Toggle_Needed', to_toggle, 'Campaign');
             ga('send', 'event', 'Toggle', pref, 'Campaign');
-        }catch(err){
+        } catch (err) {
             console.log("Couldn't log analytics event.");
         }
 
@@ -319,7 +325,7 @@
             var link = data['link'];
             var file_name = data['txt'];
 
-            if (is_image_file(file_name)){
+            if (is_image_file(file_name)) {
                 return "<br><img class='materialboxed message_image' src='" + link + "' alt='" + file_name + "'>" +
                         "<a class='grey-text modal-trigger' href='#modal_get_name'>" + data['ts'] + " by " + data['who'] + "</a><br>";
             } else {
@@ -378,7 +384,7 @@
         $('#modal_get_unit').modal('close');
 
 
-        if(JOINED_ROOM){
+        if (JOINED_ROOM) {
             message_ref.off();
         }
 
@@ -402,7 +408,7 @@
 
     function send_message_to_room(message_pre) {
         var message_text = $("#txt_message_to_send");
-        var message = message_pre!=null ? message_pre : message_text.val();
+        var message = message_pre != null ? message_pre : message_text.val();
 
 
         if (selected_unit != "" || selected_unit != null) {
