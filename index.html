@@ -249,7 +249,7 @@
                     }
                 }
                 if (askforurl) {
-                    var url = prompt("Add a URL to a shared folder with Monash University students.");
+                    var url = prompt("Add a URL. MUST BE on Google drive and shared with Monash University students.");
                     if (url && isUrl(url)) {
                         firebase.database().ref('gdrive/' + selected_unit).set(url, function (err) {
                             if (err) {
@@ -406,10 +406,29 @@
 
     }
 
+    var ESC_MAP = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    };
+
+    function escapeHTML(s, forAttribute) {
+        return s.replace(forAttribute ? /[&<>'"]/g : /[&<>]/g, function(c) {
+            return ESC_MAP[c];
+        });
+    }
+
+    function encodeHTML(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
+
     function send_message_to_room(message_pre) {
         var message_text = $("#txt_message_to_send");
         var message = message_pre != null ? message_pre : message_text.val();
-
+        message_text = message_text + "";
+        message_text = encodeHTML(message_text);
 
         if (selected_unit != "" && selected_unit != null && selected_unit.toLowerCase() != "general") {
             if (message != "") {
