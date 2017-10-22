@@ -411,7 +411,7 @@
         var message = message_pre != null ? message_pre : message_text.val();
 
 
-        if (selected_unit != "" || selected_unit != null) {
+        if (selected_unit != "" && selected_unit != null && selected_unit.toLowerCase() != "general") {
             if (message != "") {
 
                 if (message.length <= 120) {
@@ -440,7 +440,7 @@
             }
         } else {
             Materialize.toast("Please connect to a room.", 1000);
-            $("#modal_get_unit").modal('show');
+//            $("#modal_get_unit").modal('show');
         }
 
     }
@@ -449,7 +449,7 @@
         //TODO restore this line
         var unit_to_join = $("#txt_unit_code").val();
 
-        console.log(unit_to_join, unit);
+//        console.log(unit_to_join, unit);
 
         if (unit != "" && unit != null) {
             unit_to_join = unit;
