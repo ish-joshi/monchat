@@ -428,8 +428,8 @@
     function send_message_to_room(message_pre) {
         var message_text = $("#txt_message_to_send");
         var message = message_pre != null ? message_pre : message_text.val();
-        message_text = message_text + "";
-        message_text = encodeHTML(message_text);
+        message = message + "";
+        message = encodeHTML(message);
 
         if (selected_unit != "" && selected_unit != null && selected_unit.toLowerCase() != "general") {
             if (message != "") {
