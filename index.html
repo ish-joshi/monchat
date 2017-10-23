@@ -370,6 +370,7 @@
 
             var html_to_add = get_html_for_dom(message_info);
 
+            html_to_add = html_to_add.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             messages_div.append(html_to_add);
         }
 
