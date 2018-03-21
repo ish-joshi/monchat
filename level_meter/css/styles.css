@@ -1,0 +1,91 @@
+.track {
+    position: fixed;
+    border: 2px solid darkblue;
+    border-radius: 10px;
+    background-color: lightblue;
+}
+
+.vertical-marker {
+    position: fixed;
+    border: 1px solid darkblue;    
+    height: 36px;
+    width: 28px;
+    right: 10vw;
+}
+
+.horizontal-marker {
+    position: fixed;
+    border: 1px solid darkblue;    
+    height: 28px;
+    width: 36px;
+    top: calc(125px + 80vw);
+}
+
+#vertical-25 {
+    top: calc(81px + 20vw);    
+}
+
+#vertical-50 {
+    top: calc(81px + 40vw);    
+}
+
+#vertical-75 {
+    top: calc(81px + 60vw);    
+}
+
+#horizontal-25 {
+    left: calc(30vw - 19px);    
+}
+
+#horizontal-50 {
+    left: calc(50vw - 19px);    
+}
+
+#horizontal-75 {
+    left: calc(70vw - 19px);    
+}
+
+
+#vertical-track {
+    width: 26px;
+    height: 80vw;
+    right: 10vw;
+    top: 98px;
+}
+
+#horizontal-track {
+    width: 80vw;
+    height: 26px;
+    right: calc(10vw - 2px);
+    top: calc(125px + 80vw);
+}
+
+.bubble {
+    position: fixed;
+    border-radius: 20px;
+    border: 1px solid blue;
+    background-color: white;
+}
+
+#vertical-bubble {
+    right: calc(10vw + 4px);
+    top: calc(85px + 40vw);
+    width: 20px;
+    height: 28px;
+}
+
+#horizontal-bubble {
+    left: calc(50vw - 15px);
+    top: calc(129px + 80vw);
+    width: 28px;
+    height: 20px;
+}
+
+#bottom-div {
+    display: block;
+    position: fixed;
+    width: 90vw;
+    text-align: center;
+    bottom: 0;
+    margin: auto;
+}
